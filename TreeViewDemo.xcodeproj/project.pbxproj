@@ -38,6 +38,7 @@
 		1987DD2E1C28F0CF00C11C89 /* Level1_Cell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1987DD181C28F0CF00C11C89 /* Level1_Cell.xib */; };
 		1987DD2F1C28F0CF00C11C89 /* Level2_Cell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1987DD191C28F0CF00C11C89 /* Level2_Cell.xib */; };
 		1987DD321C28F0F700C11C89 /* DoubleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1987DD311C28F0F700C11C89 /* DoubleViewController.m */; };
+		19C3A0631C3A1B3E00E02088 /* ZYTreeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 19C3A0621C3A1B3E00E02088 /* ZYTreeViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,6 +108,8 @@
 		1987DD191C28F0CF00C11C89 /* Level2_Cell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Level2_Cell.xib; sourceTree = "<group>"; };
 		1987DD301C28F0F700C11C89 /* DoubleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoubleViewController.h; sourceTree = "<group>"; };
 		1987DD311C28F0F700C11C89 /* DoubleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DoubleViewController.m; sourceTree = "<group>"; };
+		19C3A0611C3A1B3E00E02088 /* ZYTreeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZYTreeViewController.h; sourceTree = "<group>"; };
+		19C3A0621C3A1B3E00E02088 /* ZYTreeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZYTreeViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +167,8 @@
 				1987DCCD1C28F09400C11C89 /* ViewController.m */,
 				1987DD301C28F0F700C11C89 /* DoubleViewController.h */,
 				1987DD311C28F0F700C11C89 /* DoubleViewController.m */,
+				19C3A0611C3A1B3E00E02088 /* ZYTreeViewController.h */,
+				19C3A0621C3A1B3E00E02088 /* ZYTreeViewController.m */,
 				1987DCCF1C28F09400C11C89 /* Main.storyboard */,
 				1987DCD21C28F09400C11C89 /* Assets.xcassets */,
 				1987DCD41C28F09400C11C89 /* LaunchScreen.storyboard */,
@@ -401,6 +406,7 @@
 				1987DD1A1C28F0CF00C11C89 /* CLTreeView_LEVEL0_Cell.m in Sources */,
 				1987DD1B1C28F0CF00C11C89 /* CLTreeView_LEVEL0_Model.m in Sources */,
 				1987DD321C28F0F700C11C89 /* DoubleViewController.m in Sources */,
+				19C3A0631C3A1B3E00E02088 /* ZYTreeViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -628,6 +634,7 @@
 				1987DCF21C28F09400C11C89 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1987DCF31C28F09400C11C89 /* Build configuration list for PBXNativeTarget "TreeViewDemoTests" */ = {
 			isa = XCConfigurationList;
@@ -636,6 +643,7 @@
 				1987DCF51C28F09400C11C89 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1987DCF61C28F09400C11C89 /* Build configuration list for PBXNativeTarget "TreeViewDemoUITests" */ = {
 			isa = XCConfigurationList;
@@ -644,6 +652,7 @@
 				1987DCF81C28F09400C11C89 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

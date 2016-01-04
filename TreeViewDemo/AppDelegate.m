@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "DoubleViewController.h"
+#import "ZYTreeViewController.h"
 
 @interface AppDelegate ()
 
@@ -19,9 +20,10 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     
-    DoubleViewController *doubleVC = [[DoubleViewController alloc] init];
-    self.window.rootViewController = doubleVC;
-    
+//    DoubleViewController *doubleVC = [[DoubleViewController alloc] init];
+//    self.window.rootViewController = doubleVC;
+    ZYTreeViewController *zyTreeVC = [[ZYTreeViewController alloc] init];
+    self.window.rootViewController = zyTreeVC;
     return YES;
 }
 

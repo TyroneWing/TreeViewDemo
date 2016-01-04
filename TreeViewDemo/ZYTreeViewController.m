@@ -1,43 +1,46 @@
 //
-//  DoubleViewController.m
-//  CLTreeViewDemo
+//  ZYTreeViewViewController.m
+//  ZYTreeView
 //
-//  Created by 钟由 on 14-9-9.
-//  Copyright (c) 2014年 flywarrior24@163.com. All rights reserved.
+//  Created by yi on 2015-12-27.
+//  Copyright (c) yi. All rights reserved.
 //
 
-#import "DoubleViewController.h"
+#import "ZYTreeViewController.h"
 #import "CLTree.h"
 
-@interface DoubleViewController ()
-
+@interface ZYTreeViewController ()
+{
+    NSIndexPath *_lastSelectPath;
+}
 @property(strong,nonatomic) NSMutableArray* dataArray; //保存全部数据的数组
-@property(strong,nonatomic) NSArray *displayArray;   //保存要显示在界面上的数据的数组
+//@property(strong,nonatomic) NSArray *displayArray;   //保存要显示在界面上的数据的数组
 
 @end
 
-@implementation DoubleViewController
+@implementation ZYTreeViewController
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self addTestData];//添加演示数据
     _myTableView = [[UITableView alloc]init];
     _myTableView.dataSource = self;
     _myTableView.delegate = self;
     _myTableView.frame = self.view.bounds;
     _myTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+//    _myTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.view addSubview:_myTableView];
-    [self addTestData];//添加演示数据
-    [self reloadDataForDisplayArray];//初始化将要显示的数据
 }
 
 
 -(void) addTestData{
     
+    _dataArray = [[NSMutableArray alloc] init];
+
     /**
      第一层
      */
-    
     CLTreeViewNode *node = [[CLTreeViewNode alloc]init];
     node.nodeLevel = 0;//根层cell
     node.type = 1;//type 1的cell
@@ -174,11 +177,13 @@
     node0.nodeData = tmp0;
     node0.cellHeight = 120.0;
     
+    
     node.sonNodes = [NSMutableArray arrayWithObjects:node5,nil];//插入子节点
     node1.sonNodes = [NSMutableArray arrayWithObjects:node7,node0,nil];//插入子节点
     node3.sonNodes = [NSMutableArray arrayWithObjects:node6,node7,node8,nil];//插入子节点
     node4.sonNodes = [NSMutableArray arrayWithObjects:node9,node0,nil];
     _dataArray = [NSMutableArray arrayWithObjects:node,node1,node3,node4, nil];//插入到元数据数组
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -188,27 +193,41 @@
 }
 
 -(NSInteger) numberOfSectionsInTableView:(UITableView *)tableView{
-    return 1;
+    return _dataArray.count;
 }
 
 -(NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section{
-    return _displayArray.count;
+    
+    CLTreeViewNode *node = _dataArray[section];
+    if (node.isExpanded) {
+        return node.sonNodes.count + 1;
+    }
+    return 1;
 }
 
 -(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    
     static NSString *indentifier = @"level0cell";
     static NSString *indentifier1 = @"level1cell";
     static NSString *indentifier2 = @"level2cell";
-    CLTreeViewNode *node = [_displayArray objectAtIndex:indexPath.row];
+
+    CLTreeViewNode *node;
+    if (indexPath.row == 0) {
+        node = _dataArray[indexPath.section];
+    } else {
+        CLTreeViewNode *nodeSection = _dataArray[indexPath.section];
+         node = nodeSection.sonNodes[indexPath.row-1];
+    }
     
     if(node.type == 0){//类型为0的cell
+        
         CLTreeView_LEVEL0_Cell *cell = [tableView dequeueReusableCellWithIdentifier:indentifier];
         if(cell == nil){
             cell = [[[NSBundle mainBundle] loadNibNamed:@"Level0_Cell" owner:self options:nil] lastObject];
         }
         cell.node = node;
-        [self loadDataForTreeViewCell:cell with:node];//重新给cell装载数据
-        [cell setNeedsDisplay]; //重新描绘cell
+        [self loadDataForTreeViewCell:cell with:node];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
     else if(node.type == 1){//类型为1的cell
@@ -218,7 +237,7 @@
         }
         cell.node = node;
         [self loadDataForTreeViewCell:cell with:node];
-        [cell setNeedsDisplay];
+        cell.selectionStyle = UITableViewCellSelectionStyleGray;
         return cell;
     }
     else{//类型为2的cell
@@ -228,7 +247,6 @@
         }
         cell.node = node;
         [self loadDataForTreeViewCell:cell with:node];
-        [cell setNeedsDisplay];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         return cell;
     }
@@ -272,149 +290,68 @@
     }
 }
 
-/*---------------------------------------
- cell高度默认为50
- --------------------------------------- */
--(CGFloat)tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    CLTreeViewNode *node = [_displayArray objectAtIndex:indexPath.row];
-//    return node.cellHeight;
-    
-    if (node.type == 1) {
-        return 50;
-    } else {
-        return 100;
-    }
-}
 
-/*---------------------------------------
- 处理cell选中事件，需要自定义的部分
- --------------------------------------- */
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    CLTreeViewNode *node = [_displayArray objectAtIndex:indexPath.row];
-    [self reloadDataForDisplayArrayChangeAt:indexPath.row];//修改cell的状态(关闭或打开)
-    if(node.type == 2){
-        //处理叶子节点选中，此处需要自定义
+    
+    if (indexPath.row == 0) {
         
+        CLTreeViewNode *node = _dataArray[indexPath.section];
+        BOOL isExpand = node.isExpanded;
         
-    }
-    else{
-        CLTreeView_LEVEL0_Cell *cell = (CLTreeView_LEVEL0_Cell*)[tableView cellForRowAtIndexPath:indexPath];
-        if(cell.node.isExpanded ){
-            [self rotateArrow:cell with:M_PI_2];
+        for (int i = 0; i<_dataArray.count; i++) {
+            CLTreeViewNode *nodeI = _dataArray[i];
+            if (nodeI.isExpanded) {
+                
+                CLTreeView_LEVEL0_Cell *cell = (CLTreeView_LEVEL0_Cell*)[tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:i]];
+                
+                if(cell.node.isExpanded){
+                    [self rotateArrow:cell with:0];
+                } else {
+                    [self rotateArrow:cell with:M_PI_2];
+                }
+
+            }
+            nodeI.isExpanded = NO;
+
         }
-        else{
+        node.isExpanded = !isExpand;
+
+        CLTreeView_LEVEL0_Cell *cell = (CLTreeView_LEVEL0_Cell*)[tableView cellForRowAtIndexPath:indexPath];
+        if(cell.node.isExpanded){
+            [self rotateArrow:cell with:M_PI_2];
+        } else {
             [self rotateArrow:cell with:0];
         }
+        [tableView reloadData];
     }
-
+    _lastSelectPath = indexPath;
 }
 
 /*---------------------------------------
  旋转箭头图标
  --------------------------------------- */
 -(void) rotateArrow:(CLTreeView_LEVEL0_Cell*) cell with:(double)degree{
-    [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
-        cell.arrowView.layer.transform = CATransform3DMakeRotation(degree, 0, 0, 1);
-    } completion:NULL];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+
+        [UIView animateWithDuration:0.2 delay:0 options:UIViewAnimationOptionAllowUserInteraction animations:^{
+            cell.arrowView.layer.transform = CATransform3DMakeRotation(degree, 0, 0, 1);
+        } completion:NULL];
+  
+    });
 }
 
-/*---------------------------------------
- 初始化将要显示的cell的数据
- --------------------------------------- */
--(void) reloadDataForDisplayArray{
-    NSMutableArray *tmp = [[NSMutableArray alloc]init];
-    for (CLTreeViewNode *node in _dataArray) {
-        [tmp addObject:node];
-        if(node.isExpanded){
-            for(CLTreeViewNode *node2 in node.sonNodes){
-                [tmp addObject:node2];
-                if(node2.isExpanded){
-                    for(CLTreeViewNode *node3 in node2.sonNodes){
-                        [tmp addObject:node3];
-                    }
-                }
-            }
-        }
+-(CGFloat)tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+    if (indexPath.row == 0) {
+        return 50;
     }
-    _displayArray = [NSArray arrayWithArray:tmp];
-    [self.myTableView reloadData];
+    return 80;
 }
 
-/*---------------------------------------
- 修改cell的状态(关闭或打开)
- --------------------------------------- */
--(void) reloadDataForDisplayArrayChangeAt:(NSInteger)row{
-    
-    NSLog(@"row = %ld",row);
 
-    NSMutableArray *tmp = [[NSMutableArray alloc]init];
-    NSInteger cnt=0;
-    for (CLTreeViewNode *node in _dataArray) {
-        [tmp addObject:node];
-        
-        if(cnt == row){
-            node.isExpanded = !node.isExpanded;
-        }
-        
-//        if (cnt == row) {
-//            node.isExpanded = !node.isExpanded;
-//        } else {
-//            if (node.isExpanded) {
-//                node.isExpanded = NO;
-//            }
-//        }
-        
-        
-        ++cnt;
-        if(node.isExpanded){
-            for(CLTreeViewNode *node2 in node.sonNodes){
-                [tmp addObject:node2];
-                if(cnt == row){
-                    node2.isExpanded = !node2.isExpanded;
-                }
-                ++cnt;
-                if(node2.isExpanded){
-                    for(CLTreeViewNode *node3 in node2.sonNodes){
-                        [tmp addObject:node3];
-                        ++cnt;
-                    }
-                }
-            }
-        }
-    }
-    _displayArray = [NSArray arrayWithArray:tmp];
-    [self.myTableView reloadData];
-    
-//    NSMutableArray *tmp = [[NSMutableArray alloc]init];
-//    NSInteger cnt=0;
-//    for (CLTreeViewNode *node in _dataArray) {
-//        [tmp addObject:node];
-//        if(cnt == row){
-//            node.isExpanded = !node.isExpanded;
-//        }
-//        ++cnt;
-//        if(node.isExpanded){
-//            for(CLTreeViewNode *node2 in node.sonNodes){
-//                [tmp addObject:node2];
-//                if(cnt == row){
-//                    node2.isExpanded = !node2.isExpanded;
-//                }
-//                ++cnt;
-//                if(node2.isExpanded){
-//                    for(CLTreeViewNode *node3 in node2.sonNodes){
-//                        [tmp addObject:node3];
-//                        ++cnt;
-//                    }
-//                }
-//            }
-//        }
-//    }
-//    _displayArray = [NSArray arrayWithArray:tmp];
-//    [self.myTableView reloadData];
-    
-
-}
 @end
+
 
